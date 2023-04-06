@@ -1,0 +1,290 @@
+https://pastebin.mozilla.org/UCN6F0Tv
+https://pastebin.mozilla.org/UCN6F0Tv
+About History New snippet
+PHP Expires in: 23 hours, 58 minutes
+Delete Now
+Raw
+Slim
+<?php
+session_start();
+require_once('src/PHPMailer.php');
+require_once('src/SMTP.php');
+
+// MongoDB connection string
+$mongoUri = "mongodb://admin:pass@ipaddress:27017/";
+$client = new MongoDB\Driver\Manager($mongoUri);
+
+// Selecting the database and collections
+$consoleDb = 'consoleDb';
+$usersCollection = 'users';
+$pendingPoolCollection = 'pendingpool';
+$removedPoolCollection = 'removedpool';
+
+// SMTP settings
+$mailHost = 'mail.email.com';
+$mailPort = 587;
+$mailUsername = 'admin@mail.’com;
+$mailPassword = ‘password-‘;
+
+// Send verification code to user via email
+function sendVerificationCode($email) {
+    global $mailHost, $mailPort, $mailUsername, $mailPassword;
+    $verificationCode = mt_rand(100000, 999999);
+    $_SESSION['verificationCode'] = $verificationCode;
+    $mail = new PHPMailer\PHPMailer\PHPMailer();
+    $mail->isSMTP();
+    $mail->Host = $mailHost;
+    $mail->Port = $mailPort;
+    $mail->SMTPAuth = true;
+    $mail->Username = $mailUsername;
+    $mail->Password = $mailPassword;
+    $mail->setFrom($mailUsername);
+    $mail->addAddress($email);
+    $mail->isHTML(true);
+    $mail->Subject = 'Verification code';
+    $mail->Body = 'Your verification code is: ' . $verificationCode;
+    $mail->send();
+}
+//necessary
+
+$_SESSION['email'] = $_POST['email'];
+echo "Session email: " . $_SESSION['email'];
+if (isset($_SESSION['email'])) {
+	$email = $_SESSION['email'];
+	$filter = ['mail' => $email];
+    $query = new MongoDB\Driver\Query($filter);
+    $user = $client->executeQuery("$consoleDb.$usersCollection", $query)->toArray();
+	print_r($user);
+    if ($user) {
+        sendVerificationCode($email);
+        echo '<form method="post"><label>Type verification code:</label><input type="text" name="verificationCode"><input type="submit" value="Submit"></form>';
+		var_dump($_SESSION);
+    } else {
+        echo 'Invalid email address';
+    }
+} elseif (isset($_POST['verificationCode'])) {
+    $verificationCode = $_POST['verificationCode'];
+    if ($verificationCode == $_SESSION['verificationCode']) {
+        $_SESSION['oldEmail'] = $_SESSION['email']; // store old email in a separate session variable
+        unset($_SESSION['email']); // unset email session variable
+        unset($_SESSION['verificationCode']); // unset verification code session variable
+		var_dump($_SESSION);
+        echo '<form method="post"><label>Type your ne email:</label><input type="text" name="newEmail"><input type="submit" value="Submit"></form>';
+    } else {
+        echo 'Invalid verification code';
+    }
+} elseif (isset($_POST['newEmail'])) {
+    $newEmail = $_POST['newEmail'];
+	$email = $_SESSION['email'];
+	print_r($newEmail);
+	print_r($_SESSION['email']);
+	print_r($email);
+	$filter = ['mail' => $email];
+	print_r($filter);
+
+    $query = new MongoDB\Driver\Query($filter);
+    $user = $client->executeQuery("$consoleDb.$usersCollection", $query)->toArray();
+	print_r($user);
+    if ($user) {
+        $expires = $user[0]->expires;
+        $removedPoolDocument = ['mail' => $email, 'expires' => $expires, 'webhook' => true];
+        $removedPoolBulk = new MongoDB\Driver\BulkWrite;
+        $removedPoolBulk->insert($removedPoolDocument);
+        $client->executeBulkWrite("$consoleDb.$removedPoolCollection", $removedPoolBulk);
+
+        $newUserDocument = ['mail' => $newEmail, 'expires' => $expires, 'webhook' => true];
+        $pendingPoolCollection->insertOne($newUserDocument);
+        echo 'New email added successfully';
+    } else {
+        echo 'Invalid email address';
+    }
+}
+?>
+<head>
+	<title>Email Updater</title>
+	<style>
+		body {
+			background-color: #000000;
+			color: #ffffff;
+		}
+		h1 {
+			text-align: center;
+		}
+		form {
+			display: block;
+			margin: auto;
+			margin-top: 20px;
+			width: 50%;
+			text-align: center;
+		}
+		input[type="text"], input[type="submit"] {
+			padding: 10px;
+			margin: 10px;
+			background-color: #ffffff;
+			color: #000000;
+			border: none;
+			border-radius: 5px;
+			font-size: 16px;
+			width: 80%;
+			box-sizing: border-box;
+		}
+		input[type="submit"] {
+			background-color: #007fff;
+			color: #ffffff;
+			cursor: pointer;
+		}
+		label {
+			display: block;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<form method="post">
+    <label>Type your email:</label>
+    <input type="text" name="email">
+    <input type="submit" value="Submit">
+</form>
+Copy Snippet
+Edit Snippet
+ Wordwrap
+<?php
+session_start();
+require_once('src/PHPMailer.php');
+require_once('src/SMTP.php');
+​
+// MongoDB connection string
+$mongoUri = "mongodb://admin:pass@ipaddress:27017/";
+$client = new MongoDB\Driver\Manager($mongoUri);
+​
+// Selecting the database and collections
+$consoleDb = 'consoleDb';
+$usersCollection = 'users';
+$pendingPoolCollection = 'pendingpool';
+$removedPoolCollection = 'removedpool';
+​
+// SMTP settings
+$mailHost = 'mail.email.com';
+$mailPort = 587;
+$mailUsername = 'admin@mail.’com;
+$mailPassword = ‘password-‘;
+​
+// Send verification code to user via email
+function sendVerificationCode($email) {
+    global $mailHost, $mailPort, $mailUsername, $mailPassword;
+    $verificationCode = mt_rand(100000, 999999);
+    $_SESSION['verificationCode'] = $verificationCode;
+    $mail = new PHPMailer\PHPMailer\PHPMailer();
+    $mail->isSMTP();
+    $mail->Host = $mailHost;
+    $mail->Port = $mailPort;
+    $mail->SMTPAuth = true;
+    $mail->Username = $mailUsername;
+    $mail->Password = $mailPassword;
+    $mail->setFrom($mailUsername);
+    $mail->addAddress($email);
+    $mail->isHTML(true);
+    $mail->Subject = 'Verification code';
+    $mail->Body = 'Your verification code is: ' . $verificationCode;
+    $mail->send();
+}
+//necessary
+​
+$_SESSION['email'] = $_POST['email'];
+echo "Session email: " . $_SESSION['email'];
+if (isset($_SESSION['email'])) {
+	$email = $_SESSION['email'];
+	$filter = ['mail' => $email];
+    $query = new MongoDB\Driver\Query($filter);
+    $user = $client->executeQuery("$consoleDb.$usersCollection", $query)->toArray();
+	print_r($user);
+    if ($user) {
+        sendVerificationCode($email);
+        echo '<form method="post"><label>Type verification code:</label><input type="text" name="verificationCode"><input type="submit" value="Submit"></form>';
+		var_dump($_SESSION);
+    } else {
+        echo 'Invalid email address';
+    }
+} elseif (isset($_POST['verificationCode'])) {
+    $verificationCode = $_POST['verificationCode'];
+    if ($verificationCode == $_SESSION['verificationCode']) {
+        $_SESSION['oldEmail'] = $_SESSION['email']; // store old email in a separate session variable
+        unset($_SESSION['email']); // unset email session variable
+        unset($_SESSION['verificationCode']); // unset verification code session variable
+		var_dump($_SESSION);
+        echo '<form method="post"><label>Type your ne email:</label><input type="text" name="newEmail"><input type="submit" value="Submit"></form>';
+    } else {
+        echo 'Invalid verification code';
+    }
+} elseif (isset($_POST['newEmail'])) {
+    $newEmail = $_POST['newEmail'];
+	$email = $_SESSION['email'];
+	print_r($newEmail);
+	print_r($_SESSION['email']);
+	print_r($email);
+	$filter = ['mail' => $email];
+	print_r($filter);
+​
+    $query = new MongoDB\Driver\Query($filter);
+    $user = $client->executeQuery("$consoleDb.$usersCollection", $query)->toArray();
+	print_r($user);
+    if ($user) {
+        $expires = $user[0]->expires;
+        $removedPoolDocument = ['mail' => $email, 'expires' => $expires, 'webhook' => true];
+        $removedPoolBulk = new MongoDB\Driver\BulkWrite;
+        $removedPoolBulk->insert($removedPoolDocument);
+        $client->executeBulkWrite("$consoleDb.$removedPoolCollection", $removedPoolBulk);
+
+        $newUserDocument = ['mail' => $newEmail, 'expires' => $expires, 'webhook' => true];
+        $pendingPoolCollection->insertOne($newUserDocument);
+        echo 'New email added successfully';
+    } else {
+        echo 'Invalid email address';
+    }
+}
+?>
+<head>
+	<title>Email Updater</title>
+	<style>
+		body {
+			background-color: #000000;
+			color: #ffffff;
+		}
+		h1 {
+			text-align: center;
+		}
+		form {
+			display: block;
+			margin: auto;
+			margin-top: 20px;
+			width: 50%;
+			text-align: center;
+		}
+		input[type="text"], input[type="submit"] {
+			padding: 10px;
+			margin: 10px;
+			background-color: #ffffff;
+			color: #000000;
+			border: none;
+			border-radius: 5px;
+			font-size: 16px;
+			width: 80%;
+			box-sizing: border-box;
+		}
+		input[type="submit"] {
+			background-color: #007fff;
+			color: #ffffff;
+			cursor: pointer;
+		}
+		label {
+			display: block;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<form method="post">
+    <label>Type your email:</label>
+    <input type="text" name="email">
+    <input type="submit" value="Submit">
+</form>
