@@ -45,8 +45,7 @@ return [
 
         'mongodb' => [
             'driver' => env('DB_CONNECTION', ''),
-            // 'dsn' => 'mongodb://localhost:27017/',
-            'dsn' => 'mongodb+srv://admin:admin31@dbad.dkuqtkk.mongodb.net/',
+            'dsn' => 'mongodb://localhost:27017/',
             'database' => env('DB_DATABASE', 'homestead'),
         ],
 
