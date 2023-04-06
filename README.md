@@ -15,11 +15,12 @@ Also inside each test classes, add:
     
 <h1>Configuration</h1>
 To configure a new MongoDB connection, add a new connection entry to config/database.php:
+
     'mongodb' => [
     'driver' => 'mongodb',
     'dsn' => env('DB_DSN'),
     'database' => env('DB_DATABASE', 'homestead'),
-],
+    ],
 
 <h1>Extending the base model</h1>
 This package includes a MongoDB enabled Eloquent class that you can use to define models for corresponding collections.
